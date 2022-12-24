@@ -7,7 +7,7 @@
 
 import Foundation
 
-class KBarTextMatcher {
+internal class KBarTextMatcher {
 	private static var cache : [Int:[String]] = [:]
 
 	private static func getWords(_ text: String) -> [String] {

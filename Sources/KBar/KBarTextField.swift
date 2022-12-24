@@ -9,14 +9,14 @@
 import Combine
 import SwiftUI
 
-protocol KBarTextFieldDelegate {
+internal protocol KBarTextFieldDelegate {
 	func onCommit()
 
 	func selectPreviousItem()
 	func selectNextItem()
 }
 
-struct KBarTextField: NSViewRepresentable {
+internal struct KBarTextField: NSViewRepresentable {
 	@Binding var text: String
 	@Binding var isFocused : Bool
 
@@ -46,7 +46,7 @@ struct KBarTextField: NSViewRepresentable {
 		view.text = text
 
 		if isFocused {
-			view.becomeFirstResponder()
+			view.window?.makeFirstResponder(view)
 		} else {
 			view.resignFirstResponder()
 		}
