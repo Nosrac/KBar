@@ -10,18 +10,22 @@ import SwiftUI
 
 struct Example1 : View {
 	@State var favoriteNumbers : [Int] = []
-	
+
 	func config() -> KBar.Config {
 		let config = KBar.Config()
 		config.showImages = false
-		config.maxItemsShown = 10
+		config.maxItemsShown = 5
 		config.keybinding = .init("k")
-		config.defaultItems = [
-			KBar.Item(title: "Remove All Favorites", image: Image(systemName: "trash.fill")) {
-				self.favoriteNumbers = []
-			}
-		]
-		
+
+		if !favoriteNumbers.isEmpty {
+			let numbersAsText = favoriteNumbers.map { "\($0)" }.joined(separator: ", ")
+			config.defaultItems = [
+				KBar.Item(title: "Remove All Favorites", subtitle: numbersAsText,  image: Image(systemName: "trash.fill")) {
+					self.favoriteNumbers = []
+				}
+			]
+		}
+
 		return config
 	}
 

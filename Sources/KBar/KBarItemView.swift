@@ -1,6 +1,6 @@
 //
 //  SwiftUIView.swift
-//  
+//
 //
 //  Created by Kyle Carson on 12/24/22.
 //
@@ -13,7 +13,7 @@ internal struct KBarItemView: View {
 	var selected : Bool
 	var callback : () -> Void
 	@EnvironmentObject var config : KBar.Config
-	
+
     var body: some View {
 		HStack {
 			if config.showImages {
@@ -29,17 +29,17 @@ internal struct KBarItemView: View {
 				if let subtitle = item.subtitle {
 					Text(subtitle)
 						.font(.system(size: 14, weight: .regular, design: .default))
-						.foregroundColor(.gray)
+						.foregroundColor(selected ? .white : .gray)
 						.lineLimit(1)
 				}
 			}
 
 			Spacer()
-			
+
 			if let badge = item.badge {
 				Text(badge)
 					.font(.system(size: 14, weight: .regular, design: .default))
-					.foregroundColor(.gray)
+					.foregroundColor(selected ? .white : .gray)
 					.lineLimit(1)
 			}
 

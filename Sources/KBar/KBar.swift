@@ -67,7 +67,7 @@ extension KBar {
 	}
 	
 	private func updateSearch(_ query : String) {
-		var visibleItems : [any KBarItem] = []
+		var visibleItems : [any KBarItem] = config.defaultItems
 		
 		if !query.isEmpty {
 			visibleItems = items.filter {
@@ -195,7 +195,7 @@ extension KBar: View {
 		} else if let keybinding = config.keybinding {
 			Button("Activate KBar") {
 				search = ""
-				visibleItems = []
+				updateSearch(search)
 				withAnimation {
 					isActive.wrappedValue = true
 				}
