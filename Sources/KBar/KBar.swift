@@ -6,7 +6,7 @@
 
 import SwiftUI
 
-struct KBar: View {
+struct KBar {
 	internal init(isActive: Binding<Bool>? = nil, items: [any KBarItem], config: KBar.Config = Config()) {
 		self._isActive = isActive
 		self.items = items
@@ -52,17 +52,6 @@ struct KBar: View {
 		var maxItemsShown = 6
 	}
 
-	var veil : some View {
-		Color.init(white: 0.5).opacity(0.5)
-			.zIndex(1)
-			.edgesIgnoringSafeArea(.all)
-			.onTapGesture {
-				withAnimation {
-					isActive.wrappedValue = false
-				}
-			}
-	}
-
 	private func activate(result: some KBarItem) {
 		withAnimation {
 			isActive.wrappedValue = false
@@ -84,6 +73,20 @@ struct KBar: View {
 			self.results = results
 			selectedResult = results.first
 		}
+	}
+}
+
+// MARK: KBar View
+extension KBar: View {
+	var veil : some View {
+		Color.init(white: 0.5).opacity(0.5)
+			.zIndex(1)
+			.edgesIgnoringSafeArea(.all)
+			.onTapGesture {
+				withAnimation {
+					isActive.wrappedValue = false
+				}
+			}
 	}
 
 	@ViewBuilder
@@ -242,6 +245,7 @@ struct KBar: View {
 	}
 }
 
+// MARK: KBar KBarTextFieldDelegate
 extension KBar : KBarTextFieldDelegate {
 	func selectPreviousItem() {
 		let index = results.firstIndex { $0.id == selectedResult?.id } ?? 0
