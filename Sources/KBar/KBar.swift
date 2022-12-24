@@ -193,6 +193,7 @@ extension KBar: View {
 			veil
 				.overlay(bar)
 				.transition(.opacity)
+				.environmentObject(config)
 		} else if let keybinding = config.keybinding {
 			Button("Activate KBar") {
 				search = ""
