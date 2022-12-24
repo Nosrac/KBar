@@ -22,6 +22,7 @@ struct KBar {
 		var showImages = true
 		var maxItemsShown = 6
 		var veil : some View = Color.init(white: 0.5).opacity(0.5)
+		var defaultItems : [any KBarItem] = []
 	}
 	
 	internal init(isActive: Binding<Bool>? = nil, items: [any KBarItem], config: KBar.Config = Config()) {
@@ -39,8 +40,8 @@ struct KBar {
 	var config = Config()
 	
 	@State internal var search = ""
-	@State internal var results : [any KBarItem] = []
-	@State internal var selectedResult : (any KBarItem)? = nil
+	@State internal var visibleItems : [any KBarItem] = []
+	@State internal var selectedItem : (any KBarItem)? = nil
 	
 	// MARK: Support isActive as an optional binding
 	@State internal var internalIsActive = false
@@ -57,26 +58,26 @@ struct KBar {
 
 // MARK: Convenience Functions
 extension KBar {
-	private func activate(result: any KBarItem) {
+	private func activate(item: any KBarItem) {
 		withAnimation {
 			isActive.wrappedValue = false
 		}
 		
-		result.callback()
+		item.callback()
 	}
 	
 	private func updateSearch(_ query : String) {
-		var results : [any KBarItem] = []
+		var visibleItems : [any KBarItem] = []
 		
 		if !query.isEmpty {
-			results = items.filter {
+			visibleItems = items.filter {
 				KBarTextMatcher.matches($0.title, query)
 			}
 		}
 		
 		withAnimation(.easeInOut(duration: 0.2)) {
-			self.results = results
-			selectedResult = results.first
+			self.visibleItems = visibleItems
+			selectedItem = visibleItems.first
 		}
 	}
 }
@@ -101,19 +102,19 @@ extension KBar: View {
 		}
 	}
 	
-	var resultsContainerHeight : CGFloat {
+	var itemsViewHeight : CGFloat {
 		let heightPerItem: CGFloat = 47
 		let subtitleHeight: CGFloat = 9
 		
 		var totalHeight : CGFloat = 0
-		let results = results
+		let visibleItems = visibleItems
 		
 		for i in 0..<config.maxItemsShown {
-			if i < results.count {
+			if i < visibleItems.count {
 				totalHeight += heightPerItem
 				
-				let result = results[i]
-				if result.subtitle != nil {
+				let item = visibleItems[i]
+				if item.subtitle != nil {
 					totalHeight += subtitleHeight
 				}
 			}
@@ -123,35 +124,35 @@ extension KBar: View {
 	}
 	
 	@ViewBuilder
-	var resultsContainer : some View {
-		let results = results
-		if !results.isEmpty {
+	var itemsView : some View {
+		let items = visibleItems
+		if !items.isEmpty {
 			ScrollView {
 				VStack(spacing: 0) {
-					ForEach(results, id: \.id) { result in
+					ForEach(items, id: \.id) { item in
 						
-						let index = results.firstIndex { $0.id == result.id }!
-						let selected = selectedResult?.id == result.id
+						let index = items.firstIndex { $0.id == item.id }!
+						let selected = selectedItem?.id == item.id
 						
-						KBarItemView(item: result, index: index, selected: selected, callback: {
-							activate(result: result)
+						KBarItemView(item: item, index: index, selected: selected, callback: {
+							activate(item: item)
 						})
 						.transition(.move(edge: .top))
 						.onHover { hovering in
 							if hovering {
-								selectedResult = result
+								selectedItem = item
 							}
 						}
 						.onTapGesture {
-							activate(result: result)
+							activate(item: item)
 						}
 					}
 					.listStyle(.plain)
 				}
 			}
-			.frame(height: resultsContainerHeight)
+			.frame(height: itemsViewHeight)
 			.onAppear {
-				selectedResult = results.first
+				selectedItem = items.first
 			}
 		}
 	}
@@ -162,7 +163,7 @@ extension KBar: View {
 			VStack(spacing: 0) {
 				textFieldContainer
 				
-				resultsContainer
+				itemsView
 			}
 			.background(Color.init(white: 0.1))
 			.foregroundColor(.white)
@@ -194,7 +195,7 @@ extension KBar: View {
 		} else if let keybinding = config.keybinding {
 			Button("Activate KBar") {
 				search = ""
-				results = []
+				visibleItems = []
 				withAnimation {
 					isActive.wrappedValue = true
 				}
@@ -208,22 +209,22 @@ extension KBar: View {
 // MARK: KBar KBarTextFieldDelegate
 extension KBar : KBarTextFieldDelegate {
 	func selectPreviousItem() {
-		let index = results.firstIndex { $0.id == selectedResult?.id } ?? 0
-		let nextIndex = (index - 1 + results.count) % results.count
+		let index = visibleItems.firstIndex { $0.id == selectedItem?.id } ?? 0
+		let nextIndex = (index - 1 + visibleItems.count) % visibleItems.count
 		
-		selectedResult = results[nextIndex]
+		selectedItem = visibleItems[nextIndex]
 	}
 	
 	func selectNextItem() {
-		let index = results.firstIndex { $0.id == selectedResult?.id } ?? 0
-		let nextIndex = (index + 1) % results.count
+		let index = visibleItems.firstIndex { $0.id == selectedItem?.id } ?? 0
+		let nextIndex = (index + 1) % visibleItems.count
 		
-		selectedResult = results[nextIndex]
+		selectedItem = visibleItems[nextIndex]
 	}
 	
 	func onCommit() {
-		if let selectedResult {
-			activate(result: selectedResult)
+		if let selectedItem {
+			activate(item: selectedItem)
 		}
 	}
 }
