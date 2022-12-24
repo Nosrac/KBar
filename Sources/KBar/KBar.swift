@@ -15,12 +15,33 @@ protocol KBarResult : Identifiable {
 }
 
 struct KBar: View {
-
-	@Binding var isActive : Bool
-	@State var search = ""
-	@Binding var allItems : [any KBarResult]
-	@State var results : [any KBarResult] = []
-	@State var selectedResult : (any KBarResult)? = nil
+	internal init(isActive: Binding<Bool>? = nil, items: [any KBarResult], config: KBar.Config = Config()) {
+		self._isActive = isActive
+		self.items = items
+		self.config = config
+		
+		if let isActive {
+			_internalIsActive = .init(initialValue: isActive.wrappedValue)
+		}
+	}
+	
+	@State internal var internalIsActive = false
+	var _isActive : Binding<Bool>?
+	
+	internal var isActive : Binding<Bool> {
+		return .init {
+			return _isActive?.wrappedValue ?? internalIsActive
+		} set: { newValue in
+			_isActive?.wrappedValue = newValue
+			   internalIsActive = _isActive?.wrappedValue ?? newValue
+		}
+	}
+	
+	var items : [any KBarResult]
+	
+	@State internal var search = ""
+	@State internal var results : [any KBarResult] = []
+	@State internal var selectedResult : (any KBarResult)? = nil
 
 	struct Result : KBarResult {
 		var id = UUID()
@@ -50,14 +71,14 @@ struct KBar: View {
 			.edgesIgnoringSafeArea(.all)
 			.onTapGesture {
 				withAnimation {
-					isActive = false
+					isActive.wrappedValue = false
 				}
 			}
 	}
 
 	private func activate(result: some KBarResult) {
 		withAnimation {
-			isActive = false
+			isActive.wrappedValue = false
 		}
 		
 		result.callback()
@@ -67,7 +88,7 @@ struct KBar: View {
 		var results : [any KBarResult] = []
 
 		if !query.isEmpty {
-			results = allItems.filter {
+			results = items.filter {
 				KBarTextMatcher.matches($0.title, query)
 			}
 		}
@@ -139,7 +160,7 @@ struct KBar: View {
 			Image(systemName: "magnifyingglass")
 				.padding(.trailing, 4)
 
-			KBarTextField(text: $search, isFocused: $isActive, delegate: self)
+			KBarTextField(text: $search, isFocused: isActive, delegate: self)
 				.frame(height: 30)
 		}
 		.font(.system(size: 20))
@@ -214,7 +235,7 @@ struct KBar: View {
 	}
 
 	var body: some View {
-		if isActive {
+		if internalIsActive {
 			veil
 				.overlay(bar)
 				.transition(.opacity)
@@ -223,7 +244,7 @@ struct KBar: View {
 				search = ""
 				results = []
 				withAnimation {
-					isActive = true
+					isActive.wrappedValue = true
 				}
 			}
 			.keyboardShortcut(KeyEquivalent.init(.init(config.keybinding)))
@@ -257,8 +278,7 @@ extension KBar : KBarTextFieldDelegate {
 struct KBar_Previews: PreviewProvider {
 	static var previews: some View {
 		ZStack {
-			KBar(isActive: .constant(true),
-				 allItems: .constant([KBar.Result(title: "Fix Grammar"), KBar.Result(title: "Fix Spelling"), KBar.Result(title: "Emphasize")]))
+			KBar(isActive: .constant(true), items: [KBar.Result(title: "Fix Grammar"), KBar.Result(title: "Fix Spelling"), KBar.Result(title: "Emphasize")])
 
 			Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum")
 				.lineLimit(nil)
