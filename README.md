@@ -11,7 +11,7 @@ A SwiftUI package to quickly create a "Command K" bar
 ## Configuration
 - showImages: Are images shown in search results? (default: `true`)
 - defaultImage: For items that do not specify an iamge, what SFSymbol do you want to display? (default: `"circle.fill"`)
-- keybinding: What keybinding will open the bar? (default: `"k"`) 
+- keybinding: What keybinding will open the bar? (default: `KeyboardShortcut("k")`) 
 - maxItemsShown: How many results should be shown at one time? (default: `6`)
 
 ## Example

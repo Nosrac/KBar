@@ -17,7 +17,7 @@ struct KBar {
 
 	struct Config {
 		var defaultImage = "circle.fill"
-		var keybinding : String? = "k"
+		var keybinding : KeyboardShortcut? = KeyboardShortcut("k")
 		var showImages = true
 		var maxItemsShown = 6
 	}
@@ -242,7 +242,7 @@ extension KBar: View {
 					isActive.wrappedValue = true
 				}
 			}
-			.keyboardShortcut(KeyEquivalent.init(.init(keybinding)))
+			.keyboardShortcut(keybinding)
 			.hidden()
 		}
 	}
