@@ -21,7 +21,7 @@ struct KBar {
 		var keybinding : KeyboardShortcut? = KeyboardShortcut("k")
 		var showImages = true
 		var maxItemsShown = 6
-		var veil : some View = Color.init(white: 0.5).opacity(0.5).edgesIgnoringSafeArea(.all)
+		var veil : some View = Color.init(white: 0.5).opacity(0.5)
 	}
 	
 	internal init(isActive: Binding<Bool>? = nil, items: [any KBarItem], config: KBar.Config = Config()) {
@@ -181,6 +181,7 @@ extension KBar: View {
 	var body: some View {
 		if internalIsActive {
 			config.veil
+				.edgesIgnoringSafeArea(.all)
 				.zIndex(1)
 				.onTapGesture {
 					withAnimation {
