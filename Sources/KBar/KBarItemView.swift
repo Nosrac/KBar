@@ -35,6 +35,13 @@ internal struct KBarItemView: View {
 			}
 
 			Spacer()
+			
+			if let badge = item.badge {
+				Text(badge)
+					.font(.system(size: 14, weight: .regular, design: .default))
+					.foregroundColor(.gray)
+					.lineLimit(1)
+			}
 
 			if index < 9 {
 				Button {
