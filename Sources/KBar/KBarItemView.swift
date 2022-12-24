@@ -46,7 +46,6 @@ internal struct KBarItemView: View {
 			if index < 9 {
 				Button {
 					callback()
-//					activate(result: result)
 				} label: {
 					Text(selected ? "⏎" : "⌘ \(index + 1)")
 						.font(.system(size: 16))
