@@ -15,12 +15,13 @@ struct KBar {
 		var badge : String? = nil
 		var callback : () -> () = {}
 	}
-
+	
 	class Config : ObservableObject {
 		var defaultImage = "circle.fill"
 		var keybinding : KeyboardShortcut? = KeyboardShortcut("k")
 		var showImages = true
 		var maxItemsShown = 6
+		var veil : some View = Color.init(white: 0.5).opacity(0.5).edgesIgnoringSafeArea(.all)
 	}
 	
 	internal init(isActive: Binding<Bool>? = nil, items: [any KBarItem], config: KBar.Config = Config()) {
@@ -32,7 +33,7 @@ struct KBar {
 			_internalIsActive = .init(initialValue: isActive.wrappedValue)
 		}
 	}
-
+	
 	// MARK: Variable
 	var items : [any KBarItem]
 	var config = Config()
@@ -49,7 +50,7 @@ struct KBar {
 			return _isActive?.wrappedValue ?? internalIsActive
 		} set: { newValue in
 			_isActive?.wrappedValue = newValue
-			   internalIsActive = _isActive?.wrappedValue ?? newValue
+			internalIsActive = _isActive?.wrappedValue ?? newValue
 		}
 	}
 }
@@ -63,16 +64,16 @@ extension KBar {
 		
 		result.callback()
 	}
-
+	
 	private func updateSearch(_ query : String) {
 		var results : [any KBarItem] = []
-
+		
 		if !query.isEmpty {
 			results = items.filter {
 				KBarTextMatcher.matches($0.title, query)
 			}
 		}
-
+		
 		withAnimation(.easeInOut(duration: 0.2)) {
 			self.results = results
 			selectedResult = results.first
@@ -82,23 +83,12 @@ extension KBar {
 
 // MARK: KBar View
 extension KBar: View {
-	var veil : some View {
-		Color.init(white: 0.5).opacity(0.5)
-			.zIndex(1)
-			.edgesIgnoringSafeArea(.all)
-			.onTapGesture {
-				withAnimation {
-					isActive.wrappedValue = false
-				}
-			}
-	}
-
 	@ViewBuilder
 	var textFieldContainer : some View {
 		HStack {
 			Image(systemName: "magnifyingglass")
 				.padding(.trailing, 4)
-
+			
 			KBarTextField(text: $search, isFocused: isActive, delegate: self)
 				.frame(height: 30)
 		}
@@ -110,28 +100,28 @@ extension KBar: View {
 			updateSearch(newValue)
 		}
 	}
-
+	
 	var resultsContainerHeight : CGFloat {
 		let heightPerItem: CGFloat = 47
 		let subtitleHeight: CGFloat = 9
-
+		
 		var totalHeight : CGFloat = 0
 		let results = results
-
+		
 		for i in 0..<config.maxItemsShown {
 			if i < results.count {
 				totalHeight += heightPerItem
-
+				
 				let result = results[i]
 				if result.subtitle != nil {
 					totalHeight += subtitleHeight
 				}
 			}
 		}
-
+		
 		return totalHeight
 	}
-
+	
 	@ViewBuilder
 	var resultsContainer : some View {
 		let results = results
@@ -165,13 +155,13 @@ extension KBar: View {
 			}
 		}
 	}
-
+	
 	@ViewBuilder
 	var bar : some View {
 		VStack {
 			VStack(spacing: 0) {
 				textFieldContainer
-
+				
 				resultsContainer
 			}
 			.background(Color.init(white: 0.1))
@@ -180,17 +170,23 @@ extension KBar: View {
 			.shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
 			.frame(idealWidth: 450)
 			.frame(maxWidth: 550)
-
+			
 			Spacer()
 		}
 		.padding(.vertical, 30)
 		.padding(.horizontal)
 		.transition(.scale)
 	}
-
+	
 	var body: some View {
 		if internalIsActive {
-			veil
+			config.veil
+				.zIndex(1)
+				.onTapGesture {
+					withAnimation {
+						isActive.wrappedValue = false
+					}
+				}
 				.overlay(bar)
 				.transition(.opacity)
 				.environmentObject(config)
@@ -213,17 +209,17 @@ extension KBar : KBarTextFieldDelegate {
 	func selectPreviousItem() {
 		let index = results.firstIndex { $0.id == selectedResult?.id } ?? 0
 		let nextIndex = (index - 1 + results.count) % results.count
-
+		
 		selectedResult = results[nextIndex]
 	}
-
+	
 	func selectNextItem() {
 		let index = results.firstIndex { $0.id == selectedResult?.id } ?? 0
 		let nextIndex = (index + 1) % results.count
-
+		
 		selectedResult = results[nextIndex]
 	}
-
+	
 	func onCommit() {
 		if let selectedResult {
 			activate(result: selectedResult)
@@ -235,7 +231,7 @@ struct KBar_Previews: PreviewProvider {
 	static var previews: some View {
 		ZStack {
 			KBar(isActive: .constant(true), items: [KBar.Item(title: "Fix Grammar"), KBar.Item(title: "Fix Spelling"), KBar.Item(title: "Emphasize")])
-
+			
 			Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum")
 				.lineLimit(nil)
 				.padding()
