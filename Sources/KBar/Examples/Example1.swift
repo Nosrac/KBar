@@ -10,6 +10,15 @@ import SwiftUI
 
 struct Example1 : View {
 	@State var favoriteNumbers : [Int] = []
+	
+	var config : KBar.Config = {
+		let config = KBar.Config()
+		config.showImages = false
+		config.maxItemsShown = 10
+		config.keybinding = .init("k")
+		
+		return config
+	}()
 
 	var items: [KBar.Item] {
 		var items : [KBar.Item] = []
@@ -27,7 +36,7 @@ struct Example1 : View {
 
 	var body : some View {
 		ZStack {
-			KBar(items: items)
+			KBar(items: items, config: config)
 
 			ScrollView {
 				Text("What are your favorite numbers?")
