@@ -265,5 +265,9 @@ struct KBar_Previews: PreviewProvider {
 				.padding()
 				.frame(height: 400)
 		}
+		.toolbar {
+			Text("KBar")
+		}
+		.presentedWindowToolbarStyle(.unified(showsTitle: true))
 	}
 }
