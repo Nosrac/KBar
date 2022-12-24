@@ -17,7 +17,7 @@ struct KBar {
 
 	struct Config {
 		var defaultImage = "circle.fill"
-		var keybinding = "k"
+		var keybinding : String? = "k"
 		var showImages = true
 		var maxItemsShown = 6
 	}
@@ -234,7 +234,7 @@ extension KBar: View {
 			veil
 				.overlay(bar)
 				.transition(.opacity)
-		} else {
+		} else if let keybinding = config.keybinding {
 			Button("Activate KBar") {
 				search = ""
 				results = []
@@ -242,7 +242,7 @@ extension KBar: View {
 					isActive.wrappedValue = true
 				}
 			}
-			.keyboardShortcut(KeyEquivalent.init(.init(config.keybinding)))
+			.keyboardShortcut(KeyEquivalent.init(.init(keybinding)))
 			.hidden()
 		}
 	}
