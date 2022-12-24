@@ -42,16 +42,4 @@ internal class KBarTextMatcher {
 		
 		return true
 	}
-	
-	static func getMatches(_ texts: [(String,UUID)], _ match: String) -> [UUID] {
-		var matched : [UUID] = []
-		
-		for (text, id) in texts {
-			if matches(text, match) {
-				matched.append(id)
-			}
-		}
-		
-		return matched
-	}
 }
