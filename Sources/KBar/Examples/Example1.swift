@@ -15,7 +15,7 @@ struct Example1 : View {
 		var items : [KBar.Item] = []
 
 		for i in 0 ..< 100 {
-			let item = KBar.Item(title: "\(i)") {
+			let item = KBar.Item(title: "\(i)", subtitle: "Pick This", badge: "#") {
 				favoriteNumbers.append(i)
 			}
 

@@ -10,12 +10,21 @@ import SwiftUI
 
 struct Example2 : View {
 	@State var favoriteNumbers : [Int] = []
+	
+	var config : KBar.Config = {
+		let config = KBar.Config()
+		config.showImages = false
+		config.maxItemsShown = 3
+		config.keybinding = .init("k")
+		
+		return config
+	}()
 
 	var items: [KBar.Item] {
 		var items : [KBar.Item] = []
 
 		for i in 0 ..< 100 {
-			let item = KBar.Item(title: "\(i)") {
+			let item = KBar.Item(title: "\(i)", subtitle: "Pick This", badge: "#") {
 				favoriteNumbers.append(i)
 			}
 
@@ -27,7 +36,7 @@ struct Example2 : View {
 
 	var body : some View {
 		ZStack {
-			KBar(items: items)
+			KBar(items: items, config: config)
 
 			ScrollView {
 				Text("What are your favorite numbers?")
