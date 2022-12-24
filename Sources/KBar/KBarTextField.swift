@@ -55,7 +55,7 @@ internal struct KBarTextField: NSViewRepresentable {
 
 // MARK: - Coordinator
 
-extension KBarTextField {
+internal extension KBarTextField {
 
 	class Coordinator: NSObject, NSTextViewDelegate {
 		var parent: KBarTextField
@@ -123,7 +123,7 @@ extension KBarTextField {
 
 // MARK: - CustomTextView
 
-final class KBarTextFieldView: NSView {
+internal final class KBarTextFieldView: NSView {
 	private var isEditable: Bool
 	private var font: NSFont? = .systemFont(ofSize: 20)
 
@@ -257,7 +257,7 @@ final class KBarTextFieldView: NSView {
 	}
 }
 
-class MyKBarTextFieldView: NSTextView {
+internal  class MyKBarTextFieldView: NSTextView {
 	@objc var placeholderAttributedString: NSAttributedString?
 
 //	override func becomeFirstResponder() -> Bool {
