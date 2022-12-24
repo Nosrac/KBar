@@ -2,4 +2,60 @@
 
 A SwiftUI package to quickly create a "Command K" bar
 
-![Example Image](https://raw.githubusercontent.com/Nosrac/KBar/main/Images/Example.png)
+![Example Image](https://raw.githubusercontent.com/Nosrac/KBar/main/Images/Example.
+
+## Features
+- Override features with a configuration
+- Optionally intialize with isActive Binding<Bool>
+
+## Configuration
+- showImages: Are images shown in search results? (default: `true`)
+- defaultImage: For items that do not specify an iamge, what SFSymbol do you want to display? (default: `"circle.fill"`)
+- keybinding: What keybinding will open the bar? (default: `"k"`) 
+- maxItemsShown: How many results should be shown at one time? (default: `6`)
+
+## Example
+```
+struct Example1 : View {
+	@State var favoriteNumbers : [Int] = []
+
+	var items: [KBar.Item] {
+		var items : [KBar.Item] = []
+
+		for i in 0 ..< 100 {
+			let item = KBar.Item(title: "\(i)") {
+				favoriteNumbers.append(i)
+			}
+
+			items.append(item)
+		}
+
+		return items
+	}
+
+	var body : some View {
+		ZStack {
+			KBar(items: items)
+
+			ScrollView {
+				Text("What are your favorite numbers?")
+					.font(.largeTitle)
+					.padding()
+
+				if favoriteNumbers.isEmpty {
+					Text("Press Command + K to get started")
+				} else {
+					LazyVGrid(columns: [GridItem(.adaptive(minimum: 60))]) {
+						ForEach(favoriteNumbers.sorted(), id: \.self) { number in
+							Text("\(number)")
+								.font(.headline)
+						}
+					}
+				}
+			}
+			.padding()
+			.frame(width: 600, height: 400)
+		}
+	}
+}
+```
