@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct KBarItemView: View {
+internal struct KBarItemView: View {
 	var item : any KBarItem
 	var index : Int
 	var selected : Bool
@@ -61,7 +61,7 @@ struct KBarItemView: View {
     }
 }
 
-struct SwiftUIView_Previews: PreviewProvider {
+internal struct SwiftUIView_Previews: PreviewProvider {
     static var previews: some View {
 		KBar_Previews.previews
     }
