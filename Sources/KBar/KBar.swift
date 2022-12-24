@@ -6,16 +6,8 @@
 
 import SwiftUI
 
-protocol KBarResult : Identifiable {
-	var id : UUID { get }
-	var image : Image? { get }
-	var title : String { get }
-	var subtitle : String? { get }
-	var callback : () -> Void { get }
-}
-
 struct KBar: View {
-	internal init(isActive: Binding<Bool>? = nil, items: [any KBarResult], config: KBar.Config = Config()) {
+	internal init(isActive: Binding<Bool>? = nil, items: [any KBarItem], config: KBar.Config = Config()) {
 		self._isActive = isActive
 		self.items = items
 		self.config = config
@@ -24,10 +16,18 @@ struct KBar: View {
 			_internalIsActive = .init(initialValue: isActive.wrappedValue)
 		}
 	}
+
+	// MARK: Variable
+	var items : [any KBarItem]
+	var config = Config()
 	
+	@State internal var search = ""
+	@State internal var results : [any KBarItem] = []
+	@State internal var selectedResult : (any KBarItem)? = nil
+	
+	// MARK: Support isActive as an optional binding
 	@State internal var internalIsActive = false
 	var _isActive : Binding<Bool>?
-	
 	internal var isActive : Binding<Bool> {
 		return .init {
 			return _isActive?.wrappedValue ?? internalIsActive
@@ -37,13 +37,7 @@ struct KBar: View {
 		}
 	}
 	
-	var items : [any KBarResult]
-	
-	@State internal var search = ""
-	@State internal var results : [any KBarResult] = []
-	@State internal var selectedResult : (any KBarResult)? = nil
-
-	struct Result : KBarResult {
+	struct Item : KBarItem {
 		var id = UUID()
 		var title : String
 		var subtitle : String? = nil
@@ -58,15 +52,8 @@ struct KBar: View {
 		var maxItemsShown = 6
 	}
 
-	var config = Config()
-
 	var veil : some View {
-
 		Color.init(white: 0.5).opacity(0.5)
-		// TODO: Add blur
-		//			.blur(radius: 4)
-		//			.background(.ultraThickMaterial.opacity(0.8))
-
 			.zIndex(1)
 			.edgesIgnoringSafeArea(.all)
 			.onTapGesture {
@@ -76,7 +63,7 @@ struct KBar: View {
 			}
 	}
 
-	private func activate(result: some KBarResult) {
+	private func activate(result: some KBarItem) {
 		withAnimation {
 			isActive.wrappedValue = false
 		}
@@ -84,8 +71,8 @@ struct KBar: View {
 		result.callback()
 	}
 
-	func updateSearch(_ query : String) {
-		var results : [any KBarResult] = []
+	private func updateSearch(_ query : String) {
+		var results : [any KBarItem] = []
 
 		if !query.isEmpty {
 			results = items.filter {
@@ -100,7 +87,7 @@ struct KBar: View {
 	}
 
 	@ViewBuilder
-	func resultView(_ result : any KBarResult) -> some View {
+	func resultView(_ result : any KBarItem) -> some View {
 		let index = results.firstIndex { $0.id == result.id }!
 		let selected = selectedResult?.id == result.id
 		HStack {
@@ -112,11 +99,13 @@ struct KBar: View {
 			VStack(alignment: .leading) {
 				Text(result.title)
 					.font(.system(size: 16, weight: .semibold, design: .default))
+					.lineLimit(1)
 
 				if let subtitle = result.subtitle {
 					Text(subtitle)
 						.font(.system(size: 14, weight: .regular, design: .default))
 						.foregroundColor(.gray)
+						.lineLimit(1)
 				}
 			}
 
@@ -278,7 +267,7 @@ extension KBar : KBarTextFieldDelegate {
 struct KBar_Previews: PreviewProvider {
 	static var previews: some View {
 		ZStack {
-			KBar(isActive: .constant(true), items: [KBar.Result(title: "Fix Grammar"), KBar.Result(title: "Fix Spelling"), KBar.Result(title: "Emphasize")])
+			KBar(isActive: .constant(true), items: [KBar.Item(title: "Fix Grammar"), KBar.Item(title: "Fix Spelling"), KBar.Item(title: "Emphasize")])
 
 			Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum")
 				.lineLimit(nil)
