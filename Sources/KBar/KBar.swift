@@ -7,6 +7,21 @@
 import SwiftUI
 
 struct KBar {
+	struct Item : KBarItem {
+		var id = UUID()
+		var title : String
+		var subtitle : String? = nil
+		var image : Image? = nil
+		var callback : () -> () = {}
+	}
+
+	struct Config {
+		var defaultImage = "circle.fill"
+		var keybinding = "k"
+		var showImages = true
+		var maxItemsShown = 6
+	}
+	
 	internal init(isActive: Binding<Bool>? = nil, items: [any KBarItem], config: KBar.Config = Config()) {
 		self._isActive = isActive
 		self.items = items
@@ -36,22 +51,10 @@ struct KBar {
 			   internalIsActive = _isActive?.wrappedValue ?? newValue
 		}
 	}
-	
-	struct Item : KBarItem {
-		var id = UUID()
-		var title : String
-		var subtitle : String? = nil
-		var image : Image? = nil
-		var callback : () -> () = {}
-	}
+}
 
-	struct Config {
-		var defaultImage = "circle.fill"
-		var keybinding = "k"
-		var showImages = true
-		var maxItemsShown = 6
-	}
-
+// MARK: Convenience Functions
+extension KBar {
 	private func activate(result: some KBarItem) {
 		withAnimation {
 			isActive.wrappedValue = false
