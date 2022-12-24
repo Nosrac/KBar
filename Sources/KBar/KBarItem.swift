@@ -13,5 +13,6 @@ protocol KBarItem : Identifiable {
 	var image : Image? { get }
 	var title : String { get }
 	var subtitle : String? { get }
+	var badge : String? { get }
 	var callback : () -> Void { get }
 }
