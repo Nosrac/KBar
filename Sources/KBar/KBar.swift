@@ -8,6 +8,15 @@ import SwiftUI
 
 public struct KBar {
 	public struct Item : KBarItem {
+		public init(id: UUID = UUID(), title: String, subtitle: String? = nil, image: Image? = nil, badge: String? = nil, callback: @escaping () -> () = {}) {
+			self.id = id
+			self.title = title
+			self.subtitle = subtitle
+			self.image = image
+			self.badge = badge
+			self.callback = callback
+		}
+		
 		public var id = UUID()
 		public var title : String
 		public var subtitle : String? = nil
