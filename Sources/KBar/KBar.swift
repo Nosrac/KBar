@@ -7,25 +7,29 @@
 import SwiftUI
 
 public struct KBar {
-	struct Item : KBarItem {
-		var id = UUID()
-		var title : String
-		var subtitle : String? = nil
-		var image : Image? = nil
-		var badge : String? = nil
-		var callback : () -> () = {}
+	public struct Item : KBarItem {
+		public var id = UUID()
+		public var title : String
+		public var subtitle : String? = nil
+		public var image : Image? = nil
+		public var badge : String? = nil
+		public var callback : () -> () = {}
 	}
 	
-	class Config : ObservableObject {
-		var defaultImage = "circle.fill"
-		var keybinding : KeyboardShortcut? = KeyboardShortcut("k")
-		var showImages = true
-		var maxItemsShown = 6
-		var veil : some View = Color.init(white: 0.5).opacity(0.5)
-		var defaultItems : [any KBarItem] = []
+	public class Config : ObservableObject {
+		public var defaultImage = "circle.fill"
+		public var keybinding : KeyboardShortcut? = KeyboardShortcut("k")
+		public var showImages = true
+		public var maxItemsShown = 6
+		public var veil : some View = Color.init(white: 0.5).opacity(0.5)
+		public var defaultItems : [any KBarItem] = []
+		
+		public init() {
+			
+		}
 	}
 	
-	internal init(isActive: Binding<Bool>? = nil, items: [any KBarItem], config: KBar.Config = Config()) {
+	public init(isActive: Binding<Bool>? = nil, items: [any KBarItem], config: KBar.Config = Config()) {
 		self._isActive = isActive
 		self.items = items
 		self.config = config
@@ -179,7 +183,7 @@ extension KBar: View {
 		.transition(.scale)
 	}
 	
-	var body: some View {
+	public var body: some View {
 		if internalIsActive {
 			config.veil
 				.edgesIgnoringSafeArea(.all)
