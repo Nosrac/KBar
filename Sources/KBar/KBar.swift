@@ -30,7 +30,7 @@ public struct KBar {
 		public var keybinding : KeyboardShortcut? = KeyboardShortcut("k")
 		public var showImages = true
 		public var maxItemsShown = 6
-		public var veil : some View = Color.init(white: 0.5).opacity(0.5)
+		public var veil : some View = Color.init(white: 0.1).opacity(0.85)
 		public var defaultItems : [any KBarItem] = []
 		
 		public init() {
@@ -180,8 +180,8 @@ extension KBar: View {
 			}
 			.background(Color.init(white: 0.1))
 			.foregroundColor(.white)
-			.cornerRadius(6)
-			.shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+			.addBorder(Color.init(white: 0.32), width: 1, cornerRadius: 6)
+			.shadow(color: .black.opacity(0.35), radius: 4, x: 0, y: 2)
 			.frame(idealWidth: 450)
 			.frame(maxWidth: 550)
 			
@@ -190,6 +190,21 @@ extension KBar: View {
 		.padding(.vertical, 30)
 		.padding(.horizontal)
 		.transition(.scale)
+	}
+	
+	@ViewBuilder
+	var activationButton : some View {
+		if let keybinding = config.keybinding {
+			Button("Activate KBar") {
+				search = ""
+				updateSearch(search)
+				withAnimation {
+					isActive.wrappedValue = true
+				}
+			}
+			.keyboardShortcut(keybinding)
+			.hidden()
+		}
 	}
 	
 	public var body: some View {
@@ -205,16 +220,8 @@ extension KBar: View {
 				.overlay(bar)
 				.transition(.opacity)
 				.environmentObject(config)
-		} else if let keybinding = config.keybinding {
-			Button("Activate KBar") {
-				search = ""
-				updateSearch(search)
-				withAnimation {
-					isActive.wrappedValue = true
-				}
-			}
-			.keyboardShortcut(keybinding)
-			.hidden()
+		} else {
+			activationButton
 		}
 	}
 }
@@ -246,7 +253,7 @@ struct KBar_Previews: PreviewProvider {
 	static var previews: some View {
 		ZStack {
 			KBar(isActive: .constant(true), items: [KBar.Item(title: "Fix Grammar"), KBar.Item(title: "Fix Spelling"), KBar.Item(title: "Emphasize")])
-			
+
 			Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum")
 				.lineLimit(nil)
 				.padding()
