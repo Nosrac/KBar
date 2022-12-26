@@ -6,7 +6,7 @@
 
 import SwiftUI
 
-struct KBar {
+public struct KBar {
 	struct Item : KBarItem {
 		var id = UUID()
 		var title : String

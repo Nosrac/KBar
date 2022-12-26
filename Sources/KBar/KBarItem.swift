@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-protocol KBarItem : Identifiable {
+public protocol KBarItem : Identifiable {
 	var id : UUID { get }
 	var image : Image? { get }
 	var title : String { get }
