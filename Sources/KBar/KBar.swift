@@ -32,6 +32,7 @@ public struct KBar {
 		public var maxItemsShown = 6
 		public var veil : some View = Color.init(white: 0.1).opacity(0.85)
 		public var defaultItems : [any KBarItem] = []
+		public var placeholderText = "Search"
 		
 		public init() {
 			
@@ -103,7 +104,7 @@ extension KBar: View {
 			Image(systemName: "magnifyingglass")
 				.padding(.trailing, 4)
 			
-			KBarTextField(text: $search, isFocused: isActive, delegate: self)
+			KBarTextField(text: $search, isFocused: isActive, config: config, delegate: self)
 				.frame(height: 30)
 		}
 		.font(.system(size: 20))

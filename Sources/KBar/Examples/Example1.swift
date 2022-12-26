@@ -16,6 +16,7 @@ struct Example1 : View {
 		config.showImages = false
 		config.maxItemsShown = 5
 		config.keybinding = .init("k")
+		config.placeholderText = "Type a number to get started"
 
 		if !favoriteNumbers.isEmpty {
 			let numbersAsText = favoriteNumbers.map { "\($0)" }.joined(separator: ", ")

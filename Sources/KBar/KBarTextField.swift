@@ -19,6 +19,8 @@ internal protocol KBarTextFieldDelegate {
 internal struct KBarTextField: NSViewRepresentable {
 	@Binding var text: String
 	@Binding var isFocused : Bool
+	
+	var config : KBar.Config
 
 	var delegate : KBarTextFieldDelegate
 
@@ -35,7 +37,8 @@ internal struct KBarTextField: NSViewRepresentable {
 			text: text,
 			isEditable: true,
 			font: .systemFont(ofSize: 20),
-			focusOnInit: true
+			focusOnInit: true,
+			kbarConfig: config
 		)
 		textView.delegate = context.coordinator
 
@@ -126,6 +129,8 @@ internal extension KBarTextField {
 internal final class KBarTextFieldView: NSView {
 	private var isEditable: Bool
 	private var font: NSFont? = .systemFont(ofSize: 20)
+	
+	var kbarConfig : KBar.Config
 
 	var focusOnInit = false
 
@@ -182,7 +187,7 @@ internal final class KBarTextFieldView: NSView {
 
 		layoutManager.addTextContainer(textContainer)
 
-		let placeholder = NSMutableAttributedString(string: "Search")
+		let placeholder = NSMutableAttributedString(string: kbarConfig.placeholderText)
 		let attributes : [NSAttributedString.Key : Any] = [
 			NSAttributedString.Key.font: self.font as Any,
 			NSAttributedString.Key.foregroundColor: NSColor.placeholderTextColor
@@ -213,11 +218,12 @@ internal final class KBarTextFieldView: NSView {
 	}()
 
 	// MARK: - Init
-	init(text: String, isEditable: Bool, font: NSFont?, focusOnInit: Bool = false) {
+	init(text: String, isEditable: Bool, font: NSFont?, focusOnInit: Bool = false, kbarConfig: KBar.Config = .init()) {
 		self.font       = font
 		self.isEditable = isEditable
 		self.text       = text
 		self.focusOnInit = focusOnInit
+		self.kbarConfig = kbarConfig
 
 		super.init(frame: .zero)
 	}

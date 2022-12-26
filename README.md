@@ -9,7 +9,8 @@ A SwiftUI package to quickly create a "Command K" bar
 - Optionally intialize with isActive Binding<Bool>
 
 ## Configuration
-- defaultItems: Items which are shown when the search string is empty
+- defaultItems: Items which are shown when the search string is empty (default: `[]`)
+- placeholderText: Placeholder text shown when the search string is empty (default: `"Search"`)
 - showImages: Are images shown in search results? (default: `true`)
 - defaultImage: For items that do not specify an iamge, what SFSymbol do you want to display? (default: `"circle.fill"`)
 - keybinding: What keybinding will open the bar? (default: `KeyboardShortcut("k")`) 
