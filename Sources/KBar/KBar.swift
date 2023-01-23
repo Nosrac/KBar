@@ -34,6 +34,8 @@ public struct KBar {
 		public var defaultItems : [any KBarItem] = []
 		public var placeholderText = "Search"
 		
+		public var additionalItemsForSearch : ((String) -> [any KBarItem])? = nil
+		
 		public init() {
 			
 		}
@@ -47,6 +49,14 @@ public struct KBar {
 		if let isActive {
 			_internalIsActive = .init(initialValue: isActive.wrappedValue)
 		}
+	}
+	
+	public init(isActive: Binding<Bool>? = nil, items: [any KBarItem], additionalItemsForSearch: @escaping ((String) -> [any KBarItem])) {
+		
+		let config = Config()
+		config.additionalItemsForSearch = additionalItemsForSearch
+		
+		self.init(isActive: isActive, items: items, config: config)
 	}
 	
 	// MARK: Variable
@@ -87,6 +97,8 @@ extension KBar {
 			visibleItems = items.filter {
 				KBarTextMatcher.matches($0.title, query)
 			}
+			
+			visibleItems.append(contentsOf: config.additionalItemsForSearch?( query ) ?? [] )
 		}
 		
 		withAnimation(.easeInOut(duration: 0.2)) {

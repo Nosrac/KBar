@@ -26,6 +26,18 @@ struct Example1 : View {
 				}
 			]
 		}
+		
+		config.additionalItemsForSearch = { search in
+			var items: [KBar.Item] = []
+			
+			if let int = Int(search), int >= 100 {
+				items.append(KBar.Item(title: search, subtitle: "Custom", badge: "#") {
+					favoriteNumbers.append(int)
+				})
+			}
+			
+			return items
+		}
 
 		return config
 	}
