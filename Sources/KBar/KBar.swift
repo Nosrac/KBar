@@ -41,17 +41,13 @@ public struct KBar {
 		}
 	}
 	
-	public init(isActive: Binding<Bool>? = nil, items: [any KBarItem], config: KBar.Config = Config()) {
-		self._isActive = isActive
+	public init(isActive: Binding<Bool>, items: [any KBarItem], config: KBar.Config = Config()) {
+		_isActive = isActive
 		self.items = items
 		self.config = config
-		
-		if let isActive {
-			_internalIsActive = .init(initialValue: isActive.wrappedValue)
-		}
 	}
 	
-	public init(isActive: Binding<Bool>? = nil, items: [any KBarItem], additionalItemsForSearch: @escaping ((String) -> [any KBarItem])) {
+	public init(isActive: Binding<Bool>, items: [any KBarItem], additionalItemsForSearch: @escaping ((String) -> [any KBarItem])) {
 		
 		let config = Config()
 		config.additionalItemsForSearch = additionalItemsForSearch
@@ -67,24 +63,14 @@ public struct KBar {
 	@State internal var visibleItems : [any KBarItem] = []
 	@State internal var selectedItem : (any KBarItem)? = nil
 	
-	// MARK: Support isActive as an optional binding
-	@State internal var internalIsActive = false
-	var _isActive : Binding<Bool>?
-	internal var isActive : Binding<Bool> {
-		return .init {
-			return _isActive?.wrappedValue ?? internalIsActive
-		} set: { newValue in
-			_isActive?.wrappedValue = newValue
-			internalIsActive = _isActive?.wrappedValue ?? newValue
-		}
-	}
+	@Binding var isActive : Bool
 }
 
 // MARK: Convenience Functions
 extension KBar {
 	private func activate(item: any KBarItem) {
 		withAnimation {
-			isActive.wrappedValue = false
+			isActive = false
 		}
 		
 		item.callback()
@@ -116,7 +102,7 @@ extension KBar: View {
 			Image(systemName: "magnifyingglass")
 				.padding(.trailing, 4)
 			
-			KBarTextField(text: $search, isFocused: isActive, config: config, delegate: self)
+			KBarTextField(text: $search, isFocused: $isActive, config: config, delegate: self)
 				.frame(height: 30)
 		}
 		.font(.system(size: 20))
@@ -212,7 +198,7 @@ extension KBar: View {
 				search = ""
 				updateSearch(search)
 				withAnimation {
-					isActive.wrappedValue = true
+					isActive = true
 				}
 			}
 			.keyboardShortcut(keybinding)
@@ -221,13 +207,13 @@ extension KBar: View {
 	}
 	
 	public var body: some View {
-		if internalIsActive {
+		if isActive {
 			config.veil
 				.edgesIgnoringSafeArea(.all)
 				.zIndex(1)
 				.onTapGesture {
 					withAnimation {
-						isActive.wrappedValue = false
+						isActive = false
 					}
 				}
 				.overlay(bar)
@@ -266,7 +252,7 @@ struct KBar_Previews: PreviewProvider {
 	static var previews: some View {
 		ZStack {
 			KBar(isActive: .constant(true), items: [KBar.Item(title: "Fix Grammar"), KBar.Item(title: "Fix Spelling"), KBar.Item(title: "Emphasize")])
-
+			
 			Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum")
 				.lineLimit(nil)
 				.padding()

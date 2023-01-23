@@ -6,7 +6,6 @@ A SwiftUI package to quickly create a "Command K" bar
 
 ## Features
 - Override features with a configuration
-- Optionally intialize with isActive Binding<Bool>
 
 ## Configuration
 - defaultItems: Items which are shown when the search string is empty (default: `[]`)
@@ -22,6 +21,7 @@ A SwiftUI package to quickly create a "Command K" bar
 ```
 struct Example1 : View {
 	@State var favoriteNumbers : [Int] = []
+	@State var kbarIsActive = false
 
 	var items: [KBar.Item] {
 		var items : [KBar.Item] = []
@@ -39,7 +39,7 @@ struct Example1 : View {
 
 	var body : some View {
 		ZStack {
-			KBar(items: items)
+			KBar(isActive: $kbarIsActive, items: items)
 
 			ScrollView {
 				Text("What are your favorite numbers?")

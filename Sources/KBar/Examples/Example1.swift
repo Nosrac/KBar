@@ -55,12 +55,15 @@ struct Example1 : View {
 
 		return items
 	}
+	
+	@State var isActive = false
 
 	var body : some View {
 		ZStack {
-			KBar(items: items, config: config())
+			KBar(isActive: $isActive, items: items, config: config())
 
 			ScrollView {
+				
 				Text("What are your favorite numbers?")
 					.font(.largeTitle)
 					.padding()
