@@ -73,32 +73,43 @@ internal extension KBarTextField {
 				return
 			}
 
-			self.parent.text = textView.string
+			DispatchQueue.main.async {
+				self.parent.text = textView.string
+			}
 		}
 
 		func textView(_ textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
 			if commandSelector == #selector(NSResponder.moveUp) {
-				self.parent.delegate.selectPreviousItem()
+				DispatchQueue.main.async {
+					self.parent.delegate.selectPreviousItem()
+				}
 				return true
 			}
 			if commandSelector == #selector(NSResponder.moveDown(_:)) {
-				self.parent.delegate.selectNextItem()
+				DispatchQueue.main.async {
+					self.parent.delegate.selectNextItem()
+				}
 				return true
 			}
 			if commandSelector == #selector(NSResponder.insertNewline(_:)) {
 
-				self.parent.delegate.onCommit()
-
+				DispatchQueue.main.async {
+					self.parent.delegate.onCommit()
+				}
 				return true
 			}
 			if commandSelector == #selector(NSResponder.cancelOperation(_:)) {
 				if textView.string.isEmpty {
-					withAnimation {
-						self.parent.isFocused = false
+					DispatchQueue.main.async {
+						withAnimation {
+							self.parent.isFocused = false
+						}
 					}
 				} else {
-					textView.string = ""
-					self.parent.text = ""
+					DispatchQueue.main.async {
+						textView.string = ""
+						self.parent.text = ""
+					}
 				}
 				
 				return true
@@ -111,7 +122,9 @@ internal extension KBarTextField {
 				return
 			}
 
-			self.parent.text = textView.string
+			DispatchQueue.main.async {
+				self.parent.text = textView.string
+			}
 		}
 
 		func textDidEndEditing(_ notification: Notification) {
@@ -119,7 +132,9 @@ internal extension KBarTextField {
 				return
 			}
 
-			self.parent.text = textView.string
+			DispatchQueue.main.async {
+				self.parent.text = textView.string
+			}
 		}
 	}
 }
